@@ -60,6 +60,7 @@ public class Broker extends UnicastRemoteObject implements IBroker {
                 subscriber.notify(ftsUpdate);
             } catch (RemoteException e) {
                 e.printStackTrace();
+                // TODO: Change to not reachable instead of stack trace.
             }
         });
         System.out.println("Subscribers were informed about the updates!");

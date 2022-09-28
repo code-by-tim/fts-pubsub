@@ -22,8 +22,9 @@ public class FTSApp {
             brokerStub.subscribe(subscriber);
 
             // TODO: Implement Publishing
-            publisher.publishRoutine();
+
             //brokerStub.publish("Some Knowledge about FTS");
+            publisher.publishRoutine();
 
         } catch (Exception e) {
             e.printStackTrace();
