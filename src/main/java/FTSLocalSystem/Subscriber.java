@@ -2,6 +2,7 @@ package FTSLocalSystem;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
 public class Subscriber extends UnicastRemoteObject implements ISubscriber {
@@ -14,8 +15,8 @@ public class Subscriber extends UnicastRemoteObject implements ISubscriber {
         try {
             semaphore.acquire();
             try{
+                System.out.println("Das folgende FTS-Knowledge-Update wurde empfangen:");
                 System.out.println(knowledgeUpdate);
-                System.out.println("We were here");
             } catch (Exception e) {
 
             } finally {

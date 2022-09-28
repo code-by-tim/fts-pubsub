@@ -8,23 +8,19 @@ public class FTSApp {
     public static void main(String[] args) {
 
         try {
-
             Publisher publisher = new Publisher();
             Subscriber subscriber = new Subscriber();
-
 
             // Find Broker through the RMI-Registry
             Registry registry = LocateRegistry.getRegistry();
             IBroker brokerStub = (IBroker) registry.lookup("broker");
-            if(brokerStub != null) System.out.println("BrokerStub found.");
+            if(brokerStub != null) System.out.println("Server gefunden.");
 
             // Subscribe to FTS-Knowledge Updates
             brokerStub.subscribe(subscriber);
 
-            // TODO: Implement Publishing
-
-            //brokerStub.publish("Some Knowledge about FTS");
-            publisher.publishRoutine();
+            // Run publish routine
+            publisher.publishRoutine(brokerStub);
 
         } catch (Exception e) {
             e.printStackTrace();
