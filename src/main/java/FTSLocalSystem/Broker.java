@@ -21,6 +21,7 @@ public class Broker extends UnicastRemoteObject implements IBroker {
         try {
             semaphorePub.acquire();
             try{
+                System.out.println("Neues Update von Publisher erhalten!");
                 this.updateKnowledgeBase(ftsObject);
                 this.informSubscribers(ftsObject);
             } catch (Exception e) {
@@ -63,6 +64,6 @@ public class Broker extends UnicastRemoteObject implements IBroker {
                 // TODO: Change to not reachable instead of stack trace.
             }
         });
-        System.out.println("Subscribers were informed about the updates!");
+        System.out.println("Updates wurden an Subscriber weitergeleitet!");
     }
 }

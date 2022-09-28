@@ -2,7 +2,6 @@ package FTSLocalSystem;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
 public class Subscriber extends UnicastRemoteObject implements ISubscriber {
@@ -25,6 +24,5 @@ public class Subscriber extends UnicastRemoteObject implements ISubscriber {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 }

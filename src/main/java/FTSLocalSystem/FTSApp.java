@@ -3,8 +3,17 @@ package FTSLocalSystem;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+/**
+ * Class representing the entry point into the client side application.
+ */
 public class FTSApp {
 
+    /**
+     * This method obtains a reference to the Broker on the Server through the RMI Registry.
+     * It then subscribes to Broker Updates and enters the publishing Routine.
+     *
+     * @param args
+     */
     public static void main(String[] args) {
 
         try {
