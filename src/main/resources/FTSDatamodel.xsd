@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+<!-- Das FTSObjekt ist das grundlegende Element-->
+<xs:element name="FTSObjekt">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="Fertigungstechnologie" type="tFertigungstechnologie" minOccurs="0"  maxOccurs="unbounded"/>
+            <xs:element name="Material" type="tMaterial" minOccurs="0"  maxOccurs="unbounded"/>
+            <xs:element name="Anbieter" type="tAnbieter" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Erfahrung" type="tErfahrung" minOccurs="0"  maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+<!--Identity Constraints (d.h. Keys und Key-Referenzen): -->
+<!--Keys-->
+<xs:key name="FT_ID">
+    <xs:selector xpath="Fertigungstechnologie"/>
+    <xs:field xpath="child::Bezeichnung"/>
+</xs:key>
+
+<xs:key name="Material_ID">
+    <xs:selector xpath="Material"/>
+    <xs:field xpath="child::Bezeichnung"/>
+</xs:key>
+
+<xs:key name="Anbieter_ID">
+    <xs:selector xpath="Anbieter"/>
+    <xs:field xpath="child::ID"/>
+</xs:key>
+
+<!--Key-Referenzen-->
+<xs:keyref name ="Materialreferenzen" refer ="Material_ID">
+    <xs:selector xpath ="Fertigungstechnologie/MaterialRef | Material/MaterialRef | Erfahrung/Kombinationsalternative/MaterialRef"/>
+    <xs:field xpath ="."/>
+</xs:keyref>
+
+<xs:keyref name ="FertigungstechnologieReferenzen" refer ="FT_ID">
+    <xs:selector xpath ="Erfahrung/Kombinationsalternative/FTRef | Anbieter/Angebot/FTRef"/>
+    <xs:field xpath ="."/>
+</xs:keyref>
+
+<xs:keyref name ="AnbieterReferenzen" refer ="Anbieter_ID">
+    <xs:selector xpath ="Erfahrung/AnbieterRef"/>
+    <xs:field xpath ="."/>
+</xs:keyref>
+</xs:element>
+
+<!--Definitionen der Subtypen des zentralen FTSObjekts (siehe oben)-->
+<!--Fertigungstechnologie-->
+<xs:complexType name="tFertigungstechnologie">
+    <xs:sequence>
+        <xs:element name="Bezeichnung" type="xs:string"/>
+        <xs:element name="MaterialRef" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+</xs:complexType>
+
+<!--Material-->
+<xs:complexType name="tMaterial">
+    <xs:sequence>
+        <xs:element name="Bezeichnung" type="xs:string"/>
+        <!--Das folgende Attribut dient der Abbildung von Materialbestandteilen-->
+        <xs:element name="MaterialRef" type="xs:string" minOccurs="0" maxOccurs="unbounded"/> 
+    </xs:sequence>
+</xs:complexType>
+
+<!--Anbieter-->
+<!--Anbieter-->
+<xs:complexType name="tAnbieter">
+    <xs:sequence>
+        <xs:element name="ID" type="xs:integer"/>
+        <xs:element name="Name" type="xs:string"/>
+        <xs:element name="Vorstellung" type="xs:string"/>
+        <xs:element name="Standort" type="xs:string" maxOccurs="unbounded"/>
+        <xs:element name="Angebot" type="tAngebot" maxOccurs="unbounded"/>
+    </xs:sequence>
+</xs:complexType>
+
+<!-- Angebot-->
+<!-- Ein Angebot referenziert eine FT und beinhaltet einen Preis.-->
+<xs:complexType name="tAngebot">
+    <xs:all>
+        <!-- Mit dem Nachrichtenzweck ist erkennbar, ob es sich um ein neues Angebot handelt oder ein zuvor veröffentlichtes zu löschen ist-->
+        <xs:element name="NachrichtenZweck">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="New /Update"/>
+                    <xs:enumeration value="Delete"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:element>
+        <xs:element name="FTRef" type="xs:string"/>
+        <xs:element name="Preis" type="xs:decimal"/>
+    </xs:all>
+</xs:complexType>
+
+<!--Erfahrung. Referenziert einen Anbieter und enthält eine Kombinationsalternative-->
+<xs:complexType name="tErfahrung">
+    <xs:sequence>
+        <xs:element name="Bezeichnung" type="xs:string"/>
+        <xs:element name="Beschreibung" type="xs:string"/>
+        <xs:element name="Kontakt" type="tKontakt" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="Stückzahl" type="xs:integer" minOccurs="0"/>
+        <xs:element name="AnbieterRef" type="xs:integer" minOccurs="0"/>
+        <xs:element name="Kombinationsalternative" type="tKombinationsalternative"/>
+    </xs:sequence>
+</xs:complexType>
+
+<!--Kontakt-->
+<xs:complexType name ="tKontakt">
+    <xs:sequence>
+        <xs:element name="Anrede">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="Herr"/>
+                    <xs:enumeration value="Frau"/>
+                    <xs:enumeration value="-"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:element>
+        <xs:element name="Vorname" type="xs:string" minOccurs="0"/>
+        <xs:element name="Nachname" type="xs:string" />
+        <xs:element name="EMail" type="xs:string"/>
+        <xs:element name="Telefon" type="xs:string"/>
+    </xs:sequence>
+</xs:complexType>
+
+<!--Kombinationsalternative. Referenziert FT und Material und enthält Bauteil (optional) und Anwendungskontext.-->
+<xs:complexType name ="tKombinationsalternative">
+    <xs:sequence>
+        <xs:element name="FTRef" type="xs:string"/>
+        <xs:element name="MaterialRef" type="xs:string"/>
+        <!--Eine Angabe des Bauteils ist im Rahmen des Wissensaustausches nicht zwingend notwendig.-->
+        <xs:element name="Bauteil" type="tBauteil" minOccurs="0"/>
+        <xs:element name="Anwendungskontext" type="tAnwendungskontext" minOccurs="0"  maxOccurs="1"/>
+    </xs:sequence>
+</xs:complexType>
+
+<!--Bauteil-->
+<xs:complexType name ="tBauteil">
+    <xs:sequence>
+        <xs:element name="ID" type="xs:integer"/>
+        <xs:element name="Bezeichnung" type="xs:string"/>
+    </xs:sequence>
+</xs:complexType>
+
+<!--Anwendungskontext-->
+<xs:complexType name ="tAnwendungskontext">
+    <xs:sequence>
+        <xs:element name="Bezeichnung" type="xs:string"/>
+        <xs:element name="Beschreibung" type="xs:string"/>
+        <xs:element name="Produktionstyp">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="Prototyping"/>
+                    <xs:enumeration value="Bau"/>
+                    <xs:enumeration value="Serienfertigung"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:element>
+    </xs:sequence>
+</xs:complexType>
+</xs:schema>

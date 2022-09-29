@@ -17,8 +17,8 @@ public class ServerApp {
         try {
             Broker broker = new Broker();
             Registry registry = LocateRegistry.createRegistry(1099);
-            //Registry registry = LocateRegistry.getRegistry(); // execute registry command in ..\java\main\
-            registry.bind("broker", broker); // Bind object to registry to inform others
+            registry.bind("broker", broker); // Bind object to the registry to inform others
+            System.out.println("Server bereit!");
         } catch (Exception e) {
             e.printStackTrace();
         }

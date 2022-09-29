@@ -9,7 +9,7 @@ import java.util.Scanner;
  */
 public class FTSApp {
     /**
-     * This method obtains a reference to the Broker on the Server through the RMI Registry.
+     * This method first initializes central variables. Afterwards it obtains a reference to the Broker on the Server through the RMI Registry.
      * It then subscribes to Broker Updates and enters the publishing Routine.
      *
      * @param args
@@ -17,6 +17,7 @@ public class FTSApp {
     public static void main(String[] args) {
 
         try {
+            // Initialize central variables
             Scanner scanner = new Scanner(System.in);
             KnowledgeBase knowledgeBase = new KnowledgeBase(scanner);
             Subscriber subscriber = new Subscriber(knowledgeBase);
@@ -25,7 +26,7 @@ public class FTSApp {
             // Find Broker through the RMI-Registry
             Registry registry = LocateRegistry.getRegistry();
             IBroker brokerStub = (IBroker) registry.lookup("broker");
-            if(brokerStub != null) System.out.println("Server gefunden.");
+            if(brokerStub != null) System.out.println("FTSApp: Server gefunden.");
 
             // Subscribe to FTS-Knowledge Updates
             brokerStub.subscribe(subscriber);
@@ -35,7 +36,6 @@ public class FTSApp {
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Fuck Error");
         }
     }
 }

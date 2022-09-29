@@ -6,3 +6,5 @@ existing anymore. The concept does not catch not reachable errors
 FTS = MTS in the english documentation
 
 An easy way to copy a file path from the windows Explorer is to press Shift and right-click the file. Then choose "Copy as filepath"
+
+Registry registry = LocateRegistry.getRegistry(); // execute registry command in ..\java\main\

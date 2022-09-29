@@ -16,7 +16,9 @@ public class Publisher {
     Pattern quotationPattern = Pattern.compile("\"(.*?)\"");
 
     /**
-     * The poublish routine first asks for the filepath to the corresponding XML-File, then validates the entered path and publishes the XML-File.
+     * The poublish routine first asks for the filepath to the corresponding XML-File,
+     * then validates the entered path and publishes the XML-File.
+     *
      * @param broker Reference to RemoteObject on which to publish
      */
     public void publishRoutine(IBroker broker, Scanner scanner) {
@@ -26,30 +28,31 @@ public class Publisher {
         filepath = this.removeQuotationMarks(filepath); //When copying the filepath in Windows there might be quotation marks
         // Validate Filepath
         if (this.isValidPath(filepath)) {
-            this.publishFTSKnowledge(broker, filepath);
+            System.out.println("Publisher: Veröffentliche Dokument...");
+            try {
+                // Validate XML File against XSD
+                if (!XMLHandler.validateXMLFile(filepath)) throw new Exception();
+
+                // Transform XML-Document to string and publish it
+                String knowledge = XMLHandler.xmlToString(filepath);
+                broker.publish(knowledge);
+                System.out.println("Publisher: Dokument veröffentlicht!");
+            } catch (Exception e) {
+                System.out.println("Publisher: Dokument konnte nicht veröffentlicht werden.");
+            }
         } else {
             // Catch wrong inputs
             System.out.println(filepath);
-            System.out.println("is not a valid filepath!");
+            System.out.println("ist kein gültiger Dateipfad zu einer XML-Datei!");
         }
     }
 
     /**
-     *
-     * @param broker
-     * @param filepath
+     * Method removes quotation marks from the beginning and end of a string.
+     * Helpful when copying the filepath directly out of the windows explorer.
+     * @param filepath path to any file
+     * @return filepath without surrounding quotation marks
      */
-    private void publishFTSKnowledge(IBroker broker, String filepath) {
-        try {
-            System.out.println("Publisher: Publishing Document...");
-            String knowledge = XMLHandler.XMLToString(filepath);
-            broker.publish(knowledge);
-            System.out.println("Publisher: Document published!");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private String removeQuotationMarks(String filepath) {
         Matcher matcher = quotationPattern.matcher(filepath);
         if (matcher.find())
@@ -60,9 +63,15 @@ public class Publisher {
         }
     }
 
+    /**
+     * The method checks if the path is a valid path in general and then if it points to a XML-File
+     *
+     * @param path to a file
+     * @return true if it is a valid path pointing to an XML-File. Otherwise false.
+     */
     private boolean isValidPath(String path) {
-        // Check if the path is valid
         try {
+            // Check if the path is valid
             Paths.get(path);
             // Check if the filepath references an XML file
             Matcher matcher = xmlFilePattern.matcher(path);
