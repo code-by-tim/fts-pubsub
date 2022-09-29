@@ -10,41 +10,27 @@ import java.util.regex.Pattern;
  */
 public class Publisher {
 
-    XMLHandler xmlHandler = new XMLHandler();
-
     //Pattern matches a filepath ending with "... .xml".
     Pattern xmlFilePattern = Pattern.compile("\\w*\\.xml");
     // Pattern used to remove leading and trailing ".
     Pattern quotationPattern = Pattern.compile("\"(.*?)\"");
 
     /**
-     * The poublish routine constantly checks for user input, asking if users want to publish something.
-     * If they do it asks for the filepath to the corresponding XML-File, validates that path and publishes it.
+     * The poublish routine first asks for the filepath to the corresponding XML-File, then validates the entered path and publishes the XML-File.
      * @param broker Reference to RemoteObject on which to publish
      */
-    public void publishRoutine(IBroker broker) {
-        while(true) {
-            System.out.println("Wollen Sie ein FTS-Update veröffentlichen? y/n");
-            Scanner scanner = new Scanner(System.in);
-            String intention = scanner.nextLine();
-            if (intention.equals("y") || intention.equals("Y")) {
-                //Get the filepath to the XML-file
-                System.out.println("Bitte geben Sie nun den Pfad zur XML-Datei an:");
-                String filepath = scanner.nextLine();
-                filepath = this.removeQuotationMarks(filepath); //When copying the filepath in Windows there might be quotation marks
-                // Validate Filepath
-                if (this.isValidPath(filepath)) {
-                    this.publishFTSKnowledge(broker, filepath);
-                } else {
-                    // Catch wrong inputs
-                    System.out.println(filepath);
-                    System.out.println("is not a valid filepath!");
-                }
-            } else if(intention.equals("n") || intention.equals("N")){
-                System.out.println("Okay!");
-            } else {
-                System.out.println("Tut mir leid, das habe ich nicht verstanden!");
-            }
+    public void publishRoutine(IBroker broker, Scanner scanner) {
+        //Get the filepath to the XML-file
+        System.out.println("Bitte geben Sie nun den Pfad zur XML-Datei an:");
+        String filepath = scanner.nextLine();
+        filepath = this.removeQuotationMarks(filepath); //When copying the filepath in Windows there might be quotation marks
+        // Validate Filepath
+        if (this.isValidPath(filepath)) {
+            this.publishFTSKnowledge(broker, filepath);
+        } else {
+            // Catch wrong inputs
+            System.out.println(filepath);
+            System.out.println("is not a valid filepath!");
         }
     }
 
@@ -55,8 +41,10 @@ public class Publisher {
      */
     private void publishFTSKnowledge(IBroker broker, String filepath) {
         try {
-            String knowledge = xmlHandler.XMLToString(filepath);
+            System.out.println("Publisher: Publishing Document...");
+            String knowledge = XMLHandler.XMLToString(filepath);
             broker.publish(knowledge);
+            System.out.println("Publisher: Document published!");
         } catch (Exception e) {
             e.printStackTrace();
         }

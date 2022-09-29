@@ -2,12 +2,12 @@ package FTSLocalSystem;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 
 /**
  * Class representing the entry point into the client side application.
  */
 public class FTSApp {
-
     /**
      * This method obtains a reference to the Broker on the Server through the RMI Registry.
      * It then subscribes to Broker Updates and enters the publishing Routine.
@@ -17,8 +17,10 @@ public class FTSApp {
     public static void main(String[] args) {
 
         try {
-            Publisher publisher = new Publisher();
-            Subscriber subscriber = new Subscriber();
+            Scanner scanner = new Scanner(System.in);
+            KnowledgeBase knowledgeBase = new KnowledgeBase(scanner);
+            Subscriber subscriber = new Subscriber(knowledgeBase);
+            MainMenu mainMenu = new MainMenu(knowledgeBase, scanner);
 
             // Find Broker through the RMI-Registry
             Registry registry = LocateRegistry.getRegistry();
@@ -28,8 +30,8 @@ public class FTSApp {
             // Subscribe to FTS-Knowledge Updates
             brokerStub.subscribe(subscriber);
 
-            // Run publish routine
-            publisher.publishRoutine(brokerStub);
+            // Run input routine
+            mainMenu.inputRoutine(brokerStub);
 
         } catch (Exception e) {
             e.printStackTrace();
